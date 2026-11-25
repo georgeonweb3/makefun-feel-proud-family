@@ -21,7 +21,11 @@ MAX_CHARS = 240
 
 
 def validate(text: str) -> None:
-    """Enforce the sealed-scorer gate: UTF-8, 1-240 chars, not only whitespace."""
+    """Enforce the sealed-scorer gate: UTF-8, 1-240 chars, not only whitespace.
+
+    Also enforce the brief itself: one short scene, one or two lines, so a
+    stray newline can never smuggle a second scene past the character count.
+    """
     text.encode("utf-8")  # raises UnicodeEncodeError on non-UTF-8
     if not (MIN_CHARS <= len(text) <= MAX_CHARS):
         raise ValueError(
@@ -30,6 +34,8 @@ def validate(text: str) -> None:
         )
     if not text.strip():
         raise ValueError("entry is only whitespace")
+    if text.count("\n") > 1:
+        raise ValueError("entry must be one or two lines")
 
 
 def main() -> None:
